@@ -2,7 +2,7 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS // Отключение предупреждений
 #include <winsock2.h> // Включение файла winsock2.h для работы с функциями Winsock
 #include <iostream>
-
+#include <string>
 SOCKET Connection;
 
 int main() {
@@ -27,4 +27,20 @@ int main() {
 		return 1;
 	}
 	std::cout << "Connected!\n";
+	int msg_size; // Размер сообщения
+	recv(Connection, (char*)&msg_size, sizeof(int), NULL); // Получаем размер сообщения
+	char* msg = new char[msg_size + 1]; // Выделяем память под сообщение
+	msg[msg_size] = '\0'; // Устанавливаем завершающий нуль
+	recv(Connection, msg, msg_size, NULL); // Получаем сообщение
+	std::cout << msg << std::endl;
+	delete[] msg; // Освобождение памяти
+	std::string userMessage;
+	while (true)
+	{
+		std::getline(std::cin, userMessage);
+		msg_size = userMessage.size();
+		send(Connection, (char*)&msg_size, sizeof(int), NULL);
+		send(Connection, userMessage.c_str(), msg_size, NULL);
+	}
+	
 }
