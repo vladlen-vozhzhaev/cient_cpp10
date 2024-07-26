@@ -5,6 +5,19 @@
 #include <string>
 SOCKET Connection;
 
+void recvMessage() {
+	int msg_size; // Размер сообщения
+	char* msg;
+	while (true){
+		recv(Connection, (char*)&msg_size, sizeof(int), NULL); // Получаем размер сообщения
+		msg = new char[msg_size + 1]; // Выделяем память под сообщение
+		msg[msg_size] = '\0'; // Устанавливаем завершающий нуль
+		recv(Connection, msg, msg_size, NULL); // Получаем сообщение
+		std::cout << msg << std::endl;
+		delete[] msg; // Освобождение памяти
+	}
+}
+
 int main() {
 	WSAData wsaData;
 	WORD DLLVersion = MAKEWORD(2, 1);
@@ -31,16 +44,15 @@ int main() {
 	recv(Connection, (char*)&msg_size, sizeof(int), NULL); // Получаем размер сообщения
 	char* msg = new char[msg_size + 1]; // Выделяем память под сообщение
 	msg[msg_size] = '\0'; // Устанавливаем завершающий нуль
-	recv(Connection, msg, msg_size, NULL); // Получаем сообщение
+	recv(Connection, msg, msg_size, NULL); // Получаем сообщение "Hello world"
 	std::cout << msg << std::endl;
 	delete[] msg; // Освобождение памяти
 	std::string userMessage;
-	while (true)
-	{
-		std::getline(std::cin, userMessage);
+	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)recvMessage, NULL, NULL, NULL);
+	while (true){
+		std::getline(std::cin, userMessage); // Ожидаем ввод сообщения от пользователя
 		msg_size = userMessage.size();
 		send(Connection, (char*)&msg_size, sizeof(int), NULL);
 		send(Connection, userMessage.c_str(), msg_size, NULL);
 	}
-	
 }
