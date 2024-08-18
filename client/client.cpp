@@ -40,13 +40,7 @@ int main() {
 		return 1;
 	}
 	std::cout << "Connected!\n";
-	int msg_size; // Размер сообщения
-	recv(Connection, (char*)&msg_size, sizeof(int), NULL); // Получаем размер сообщения
-	char* msg = new char[msg_size + 1]; // Выделяем память под сообщение
-	msg[msg_size] = '\0'; // Устанавливаем завершающий нуль
-	recv(Connection, msg, msg_size, NULL); // Получаем сообщение "Hello world"
-	std::cout << msg << std::endl;
-	delete[] msg; // Освобождение памяти
+	int msg_size;
 	std::string userMessage;
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)recvMessage, NULL, NULL, NULL);
 	while (true){
